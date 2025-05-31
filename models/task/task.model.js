@@ -12,5 +12,5 @@ const taskSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const TaskModel = DB_USER.model("users", taskSchema);
+const TaskModel = DB_USER.model("task", taskSchema);
 module.exports = TaskModel;

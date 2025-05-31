@@ -72,16 +72,15 @@ const createUser = async (req, res) => {
 
     const saltRounds = 10;
     const hash = await bcrypt.hash(password, saltRounds);
-    const SECRET_KEY = crypto.randomBytes(64).toString("hex");
+    const SECRET_KEY = process.env.SECRET_KEY;
 
     const createUser = await USERMODEL.create({
       email,
       password: hash,
       createdAt: new Date(),
-      user_secretkey: SECRET_KEY,
     });
     const token = jwt.sign({ userId: createUser?._id }, SECRET_KEY, {
-      expiresIn: "1h",
+      expiresIn: "1m",
     });
 
     return res.status(200).json({
@@ -97,6 +96,7 @@ const createUser = async (req, res) => {
 const LoginControler = async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log(email);
     if (!email || !password) {
       return res
         .status(400)
@@ -104,20 +104,19 @@ const LoginControler = async (req, res) => {
     }
     const user = await USERMODEL.findOne({ email });
     if (!user) {
-      return res.status(200).json({ msg: "User Not Found!", code: 400 });
+      return res
+        .status(200)
+        .json({ msg: "User Not Found! Please Register.", code: 400 });
     }
 
     const match = await bcrypt.compare(password, user?.password);
     if (!match) {
       return res.status(200).json({ msg: "Wrong Password!", code: 400 });
     }
-    const newSecretKey = crypto.randomBytes(64).toString("hex");
-    const updateOtp = USERMODEL.findOneAndUpdate(
-      { email },
-      { user_secretkey: newSecretKey }
-    );
+    const newSecretKey = process.env.SECRET_KEY;
+
     const token = jwt.sign({ userId: user?._id }, newSecretKey, {
-      expiresIn: "1h",
+      expiresIn: "1m",
     });
 
     return res.status(200).json({
@@ -126,6 +125,7 @@ const LoginControler = async (req, res) => {
       token,
     });
   } catch (err) {
+    console.log(err);
     return res.status(200).json({ msg: "Internal server error!", code: 500 });
   }
 };

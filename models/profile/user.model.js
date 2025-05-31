@@ -11,5 +11,5 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const USERMODEL = DB_USER.model("lemonpay_users", userSchema);
+const USERMODEL = DB_USER.model("lemonpayusers", userSchema);
 module.exports = USERMODEL;

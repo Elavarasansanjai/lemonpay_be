@@ -9,7 +9,7 @@ require("./config/dbConfig");
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
-app.use("/api/lemonpay/", AppRouter);
+app.use("/api/lemonpay", AppRouter);
 app.listen(process.env.PORT, () => {
   console.log("user running on port " + process.env.PORT);
 });

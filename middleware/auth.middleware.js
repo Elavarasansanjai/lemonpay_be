@@ -13,7 +13,7 @@ async function getUserByRefreshToken(userId) {
 
       const createNewAccessToken = jwt.sign(
         { userId: userData._id },
-        userData?.user_secretkey,
+        process.env.SECRET_KEY,
         { expiresIn: "1m" }
       );
       console.log("new access token,,,,,,,,,,,", createNewAccessToken);
@@ -59,16 +59,16 @@ const authMiddleware = async (req, res, next) => {
       return res.status(200).json({ msg: "Bad Request!", code: 400 });
     }
     const { userId } = userDetail;
-    if(!userId){
-      return res.status(200).json({msg:"Bad GateWay!", code : 400})
+    if (!userId) {
+      return res.status(200).json({ msg: "Bad GateWay!", code: 400 });
     }
     const getUserDetail = await USERMODEL.findById({ _id: userId });
     if (!getUserDetail) {
       return res.status(200).json({ msg: "User Not Found!", code: 400 });
     }
-    
-    
-    const decoded = jwt.verify(accessToken, getUserDetail?.user_secretkey);
+    console.log("emnkjasnvkajsdnv masnd v");
+    console.log(accessToken);
+    const decoded = jwt.verify(accessToken, process.env.SECRET_KEY);
     console.log(decoded, "//////// decoded");
     req.user = getUserDetail;
     return next();
